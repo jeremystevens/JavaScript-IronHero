@@ -159,19 +159,25 @@ class Game {
     
     setupInputHandlers() {
         const keys = {};
-
+    
         window.addEventListener("keydown", (e) => {
             keys[e.code] = true;
         });
-
+    
         window.addEventListener("keyup", (e) => {
             keys[e.code] = false;
         });
-
+    
         this.app.ticker.add(() => {
             if (keys["ArrowLeft"]) this.player.move('left');
             if (keys["ArrowRight"]) this.player.move('right');
-            if (keys["ArrowUp"]) this.player.move('up');
+            if (keys["ArrowUp"]) {
+                // Check if moving up would put the player into the UI area
+                const newYPosition = this.player.sprite.y - this.player.speed;
+                if (newYPosition > this.uiManager.uiAreaHeight) { // Ensure uiManager and uiAreaHeight are accessible here
+                    this.player.move('up');
+                }
+            }
             if (keys["ArrowDown"]) this.player.move('down');
             if (keys["Space"] && !this.player.shooting) {
                 this.player.shoot();
@@ -179,7 +185,7 @@ class Game {
             }
             if (!keys["Space"]) this.player.shooting = false; // Reset shooting flag when spacebar is released
         });
-    }
+    }    
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
