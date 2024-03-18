@@ -3,7 +3,7 @@ class Game {
     constructor() {
         this.app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x000000 }); // Start with a black canvas
         document.body.appendChild(this.app.view);
-
+        this.currentLevel = 1; // Initialize the level variable
         this.loadAssets();
     }
 
@@ -16,6 +16,7 @@ class Game {
             .add('playerSprite', 'assets/images/player_sprite.png')
             .add('bulletSprite', 'assets/images/bullet_sprite.png')
             .add('playerBulletSound', 'assets/audio/player_bullet_sound.ogg')
+            .add('level1_enemy1', 'assets/images/level1_enemy1.png')
             .load(this.onAssetsLoaded.bind(this));
     }
 
@@ -111,7 +112,7 @@ class Game {
         const countdownInterval = setInterval(() => {
             countdownValue -= 1;
     
-            if (countdownValue >= 1) { // Ensure countdown stops at 1
+            if (countdownValue >= 1) {
                 countdownText.text = countdownValue.toString();
     
                 // Play countdown sound for the next number
@@ -127,47 +128,59 @@ class Game {
                 countdownAudio.pause();
                 countdownAudio.currentTime = 0;
     
-                // Initialize the Top UI for lives and score
-                this.uiManager.initUI();
-    
-                // Start the actual Level 1 content here
-                const spaceBg = new PIXI.TilingSprite(this.app.loader.resources.spaceBackground.texture, this.app.screen.width, this.app.screen.height - this.uiManager.uiAreaHeight);
-                spaceBg.y = this.uiManager.uiAreaHeight; // Start the background just below the UI area
-                this.app.stage.addChild(spaceBg);
-    
-                // Ensure the background scrolls from right to left
-                this.app.ticker.add(() => {
-                    spaceBg.tilePosition.x -= 2; // Adjust the scroll speed as needed
+                // Display "Level: X" text
+                const levelText = new PIXI.Text(`Level: ${this.currentLevel}`, {
+                    fontFamily: 'Arial',
+                    fontSize: 48,
+                    fill: '#ffffff'
                 });
     
-                // Position the player for Level 1
-                this.player.sprite.x = this.app.screen.width / 2;
-                this.player.sprite.y = this.app.screen.height - this.player.sprite.height / 2 - 20; // Positioned above the bottom edge
-                this.app.stage.addChild(this.player.sprite);
+                levelText.x = (this.app.screen.width - levelText.width) / 2;
+                levelText.y = (this.app.screen.height - levelText.height) / 2;
+                this.app.stage.addChild(levelText);
     
-                // Start level 1 music
-                if (!this.level1Music) {
+                // Remove "Level: X" text after a few seconds and then start the actual Level 1
+                setTimeout(() => {
+                    this.app.stage.removeChild(levelText);
+    
+                    // Initialize the Top UI for lives and score
+                    this.uiManager.initUI();
+    
+                    // Start the actual Level 1 content here
+                    const spaceBg = new PIXI.TilingSprite(this.app.loader.resources.spaceBackground.texture, this.app.screen.width, this.app.screen.height - this.uiManager.uiAreaHeight);
+                    spaceBg.y = this.uiManager.uiAreaHeight; // Start the background just below the UI area
+                    this.app.stage.addChild(spaceBg);
+    
+                    // Ensure the background scrolls from right to left
+                    this.app.ticker.add(() => {
+                        spaceBg.tilePosition.x -= 2; // Adjust the scroll speed as needed
+                    });
+    
+                    // Position the player for Level 1
+                    this.player.sprite.x = this.app.screen.width / 2;
+                    this.player.sprite.y = this.app.screen.height - this.player.sprite.height / 2 - 20; // Positioned above the bottom edge
+                    this.app.stage.addChild(this.player.sprite);
+    
+                    // Start level 1 music
                     this.level1Music = new Audio('assets/audio/level1.mp3');
                     this.level1Music.loop = true;
-                }
-                this.level1Music.play().catch(e => console.error("Level 1 music error:", e));
+                    this.level1Music.play().catch(e => console.error("Level 1 music error:", e));
+                }, 2000); // Display "Level: X" text for 2 seconds
             }
         }, 1000); // Update the countdown every second
     }
-    
-    
-    
+
     setupInputHandlers() {
         const keys = {};
-    
+
         window.addEventListener("keydown", (e) => {
             keys[e.code] = true;
         });
-    
+
         window.addEventListener("keyup", (e) => {
             keys[e.code] = false;
         });
-    
+
         this.app.ticker.add(() => {
             if (keys["ArrowLeft"]) this.player.move('left');
             if (keys["ArrowRight"]) this.player.move('right');
@@ -185,7 +198,7 @@ class Game {
             }
             if (!keys["Space"]) this.player.shooting = false; // Reset shooting flag when spacebar is released
         });
-    }    
+    }
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
