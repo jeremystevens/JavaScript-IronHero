@@ -1,6 +1,7 @@
 # 🚀 Iron Hero Javascript 0.1-Beta 🚀
 
-![Alt text](screenshots/Screenshot.png?raw=true "Title Screen")
+![Screenshot](https://github.com/jeremystevens/JavaScript-IronHero/blob/ba6d9895a49f695e20404ad95bb0725ff72b3547/screenshots/screenshot.png)
+
 
 Iron Hero is an exciting game where you can take control of a spaceship, battle alien foes, and conquer the cosmos. Please note that this game is still in development.
 
