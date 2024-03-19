@@ -16,7 +16,7 @@ To play the Iron Hero, follow these steps:
 
 2. Navigate to the project directory:
    ```sh
-   cd iron-hero
+   cd JavaScript-IronHero
 
 3. Run the game by Opening the following file in your web browser:
     ```sh
