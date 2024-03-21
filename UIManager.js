@@ -1,4 +1,6 @@
 // UIManager.js 
+// Version 2 - Updated to keep the score on the screen by adjusting the x position of the scoreText
+
 class UIManager {
     constructor(app) {
         this.app = app;
@@ -76,6 +78,8 @@ class UIManager {
     updateScore(newScore) {
         this.score = newScore;
         this.scoreText.text = 'Score: ' + this.score;
+        // Adjust the x position of the scoreText based on its width to ensure it's always visible
+        this.scoreText.x = this.app.screen.width - this.scoreText.width - 10;
     }
 
     updateLives(newLives) {
