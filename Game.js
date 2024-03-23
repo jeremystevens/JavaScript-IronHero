@@ -1,5 +1,5 @@
 // Game.js
-// Version 5 - Hit Detection and Scoring (Game5.js)
+// Version 4 - Hit Detection and Scoring (Game5.js)
 // This version adds hit detection between player bullets and enemies, and scoring when enemies are destroyed.
 // It also includes a method to check for collisions between two rectangles.
 class Game {
@@ -127,15 +127,15 @@ class Game {
     }
     // check collision
     checkCollisions() {
+        // Check for collisions between player bullets and enemies
         if (!this.player || !this.player.bullets) return;
         this.enemies.forEach((enemy, enemyIndex) => {
             if (enemy.isDestroyed) return; // Skip destroyed enemies
-
+    
             this.player.bullets.forEach((bullet, bulletIndex) => {
                 if (enemy.checkCollisionWithBullet(bullet)) {
-                    // Collision detected, handle it
-                    //console.log('Collision detected between enemy and bullet');
-                    enemy.takeHit(); // Example method to damage the enemy
+                    // Collision detected between enemy and bullet
+                    enemy.takeHit(); // Damage the enemy
                     if (enemy.isDestroyed) {
                         // Remove enemy if it's destroyed
                         this.app.stage.removeChild(enemy.sprite);
@@ -144,8 +144,28 @@ class Game {
                         this.uiManager.updateScore(this.uiManager.score + 100);
                     }
                     // Remove the bullet
-                    this.app.stage.removeChild(bullet);
+                    this.app.stage.removeChild(bullet.sprite);
                     this.player.bullets.splice(bulletIndex, 1);
+                }
+            });
+        });
+    
+        // Check for collisions between enemy bullets and the player
+        this.enemies.forEach(enemy => {
+            enemy.bullets.forEach((bullet, bulletIndex) => {
+                if (bullet.sprite && this.player.sprite && this.hitTestRectangle(bullet.sprite, this.player.sprite)) {
+                    // Collision detected between enemy bullet and player
+                    console.log('Player hit by enemy bullet');
+                    this.uiManager.updateLives(this.uiManager.lives - 1); // Decrease player lives
+                    // Remove the enemy bullet
+                    this.app.stage.removeChild(bullet.sprite);
+                    enemy.bullets.splice(bulletIndex, 1);
+    
+                    if (this.uiManager.lives <= 0) {
+                        console.log('Game Over');
+                        // Stop the game or transition to a game over screen
+                        this.app.ticker.stop();
+                    }
                 }
             });
         });
